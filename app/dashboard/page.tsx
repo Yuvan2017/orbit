@@ -84,7 +84,11 @@ export default function Dashboard() {
 
   const [showProjectForm, setShowProjectForm] = useState(false);
   const [showTaskForm, setShowTaskForm] = useState(false);
-  const [showProjectDetails, setShowProjectDetails] = useState(false);
+  const [showProjectDetails, setShowProjectDetails] = useState(false); 
+  const [aiInput, setAiInput] = useState("");
+const [aiResponse, setAiResponse] = useState(
+  "Ask Orbit anything about your projects, tasks or productivity."
+);
 
   const [selectedProjectId, setSelectedProjectId] = useState<number | null>(
     null
@@ -176,7 +180,47 @@ export default function Dashboard() {
     setEditStatus(project.status);
     setShowProjectDetails(true);
   }
+function handleAIQuery() {
+  const lower = aiInput.toLowerCase();
 
+  if (!lower.trim()) {
+    setAiResponse("Ask me something about your projects, tasks, or productivity.");
+    return;
+  }
+
+  if (lower.includes("project")) {
+    setAiResponse(
+      `You currently have ${projects.length} projects. Orbit is ${projects[0]?.progress ?? 0}% complete.`
+    );
+    return;
+  }
+
+  if (lower.includes("task")) {
+    const completed = tasks.filter((task) => task.completed).length;
+    setAiResponse(
+      `You have ${tasks.length} tasks, with ${completed} completed. Your productivity is ${productivity}%.`
+    );
+    return;
+  }
+
+  if (lower.includes("arc")) {
+    setAiResponse(
+      "Orbit is being developed for the Arc ecosystem, with deeper Arc integration planned as the project evolves."
+    );
+    return;
+  }
+
+  if (lower.includes("productivity")) {
+    setAiResponse(
+      `Your current task productivity is ${productivity}%. Keep completing high-priority tasks to improve it.`
+    );
+    return;
+  }
+
+  setAiResponse(
+    "I can help with your projects, tasks, productivity, and planned Arc integration. Try asking one of those."
+  );
+}
   function createProject() {
     if (!newProject.trim()) return;
 
