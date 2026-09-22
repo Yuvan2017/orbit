@@ -20,7 +20,12 @@ export default function Login() {
 
         <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg">
           Login
-        </button>
+        </button> <a
+  href="/dashboard"
+  className="mt-4 block w-full rounded-lg border border-purple-500/40 bg-purple-600/10 py-3 text-center text-white hover:bg-purple-600/20"
+>
+  Explore Orbit →
+</a>
       </div>
     </main>
   );
