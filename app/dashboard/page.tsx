@@ -239,7 +239,43 @@ const [aiResponse, setAiResponse] = useState(
     alert("Wallet connection was cancelled.");
   }
 }
-async function switchAccount() {
+async function switchToArc() {
+  const ethereum = (window as any).ethereum;
+
+  if (!ethereum) {
+    alert("Please install MetaMask or another EVM wallet.");
+    return;
+  }
+
+  try {
+    await ethereum.request({
+      method: "wallet_switchEthereumChain",
+      params: [{ chainId: "0x4cef52" }],
+    });
+  } catch (error: any) {
+    if (error?.code === 4902) {
+      await ethereum.request({
+        method: "wallet_addEthereumChain",
+        params: [
+          {
+            chainId: "0x4cef52",
+            chainName: "Arc Testnet",
+            nativeCurrency: {
+              name: "USDC",
+              symbol: "USDC",
+              decimals: 18,
+            },
+            rpcUrls: ["https://rpc.testnet.arc.network"],
+            blockExplorerUrls: ["https://testnet.arcscan.app"],
+          },
+        ],
+      });
+    } else {
+      alert("Unable to switch to Arc Testnet.");
+    }
+  }
+}
+  async function switchAccount() {
   const ethereum = (window as any).ethereum;
 
   if (!ethereum) {
@@ -588,6 +624,14 @@ async function switchAccount() {
     Network:{" "}
     {chainId === "0x4cef52" ? "Arc Testnet" : `Chain ${chainId}`}
   </div>
+)} 
+  {walletAddress && chainId && chainId !== "0x4cef52" && (
+  <button
+    onClick={switchToArc}
+    className="mt-2 w-full rounded-lg border border-purple-500/40 bg-purple-600/10 px-3 py-2 text-xs font-semibold text-purple-300 hover:bg-purple-600/20"
+  >
+    Switch to Arc Testnet
+  </button>
 )}
 
   {showWalletMenu && walletAddress && (
