@@ -623,7 +623,7 @@ function handleAIQuery() {
           </div>
 
           {/* AI */}
-          <div className="mt-6 rounded-2xl border border-purple-500/20 bg-gradient-to-r from-purple-950/50 to-blue-950/50 p-6">
+          <div id="ai-assistant" className="mt-6 rounded-2xl border border-purple-500/20 bg-gradient-to-r from-purple-950/50 to-blue-950/50 p-6">
 
             <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
 
@@ -645,7 +645,10 @@ function handleAIQuery() {
               </div>
 
               <button
-                onClick={() => setActive("AI Assistant")}
+                onClick={() => {
+  setActive("AI Assistant");
+  document.getElementById("ai-assistant")?.scrollIntoView({ behavior: "smooth" });
+}}
                 className="rounded-xl border border-purple-500/40 px-5 py-3 text-sm font-semibold hover:bg-purple-500/10"
               >
                 Explore AI →
