@@ -76,7 +76,9 @@ const defaultTasks: Task[] = [
 ];
 
 export default function Dashboard() {
-  const [active, setActive] = useState("Dashboard"); const [showAIAssistant, setShowAIAssistant] = useState(false);
+ const [active, setActive] = useState("Dashboard");
+const [showAIAssistant, setShowAIAssistant] = useState(false);
+const [walletAddress, setWalletAddress] = useState("");
 
   const [projects, setProjects] = useState<Project[]>(defaultProjects);
   const [tasks, setTasks] = useState<Task[]>(defaultTasks);
@@ -179,7 +181,26 @@ const [aiResponse, setAiResponse] = useState(
     setEditProgress(project.progress);
     setEditStatus(project.status);
     setShowProjectDetails(true);
+  } async function connectWallet() {
+  const ethereum = (window as any).ethereum;
+
+  if (!ethereum) {
+    alert("Please install MetaMask or another EVM wallet.");
+    return;
   }
+
+  try {
+    const accounts = await ethereum.request({
+      method: "eth_requestAccounts",
+    });
+
+    if (accounts?.[0]) {
+      setWalletAddress(accounts[0]);
+    }
+  } catch {
+    alert("Wallet connection was cancelled.");
+  }
+}
 function handleAIQuery() {
   const query = aiInput.trim().toLowerCase();
 
@@ -479,7 +500,14 @@ function handleAIQuery() {
               className="rounded-xl bg-purple-600 px-5 py-3 text-sm font-semibold transition hover:bg-purple-500"
             >
               + New Task
-            </button>
+            </button> <button
+  onClick={connectWallet}
+  className="ml-3 rounded-xl border border-blue-500/40 bg-blue-600/10 px-5 py-3 text-sm font-semibold text-blue-300 transition hover:bg-blue-600/20"
+>
+  {walletAddress
+    ? `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`
+    : "Connect Wallet"}
+</button>
 
           </header>
 
