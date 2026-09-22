@@ -79,6 +79,7 @@ export default function Dashboard() {
  const [active, setActive] = useState("Dashboard");
 const [showAIAssistant, setShowAIAssistant] = useState(false);
 const [walletAddress, setWalletAddress] = useState(""); 
+  const [chainId, setChainId] = useState("");
   const [showWalletMenu, setShowWalletMenu] = useState(false); 
   useEffect(() => {
   const ethereum = (window as any).ethereum;
@@ -93,6 +94,27 @@ const [walletAddress, setWalletAddress] = useState("");
 
   return () => {
     ethereum.removeListener("accountsChanged", handleAccountsChanged);
+  };
+}, []); 
+  useEffect(() => {
+  const ethereum = (window as any).ethereum;
+
+  if (!ethereum) return;
+
+  const updateChain = async () => {
+    const currentChainId = await ethereum.request({
+      method: "eth_chainId",
+    });
+
+    setChainId(currentChainId);
+  };
+
+  updateChain();
+
+  ethereum.on("chainChanged", updateChain);
+
+  return () => {
+    ethereum.removeListener("chainChanged", updateChain);
   };
 }, []);
 
@@ -560,7 +582,13 @@ async function switchAccount() {
     {walletAddress
       ? `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)} ▾`
       : "Connect Wallet"}
-  </button>
+  </button> 
+   {walletAddress && chainId && (
+  <div className="mt-2 text-right text-xs text-slate-400">
+    Network:{" "}
+    {chainId === "0x4cef52" ? "Arc Testnet" : `Chain ${chainId}`}
+  </div>
+)}
 
   {showWalletMenu && walletAddress && (
     <div className="absolute right-0 mt-2 w-64 rounded-xl border border-slate-700 bg-slate-900 p-3 shadow-xl">
