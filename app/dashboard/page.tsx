@@ -519,7 +519,7 @@ function disconnectWallet() {
               className="rounded-xl bg-purple-600 px-5 py-3 text-sm font-semibold transition hover:bg-purple-500"
             >
               + New Task
-            </button> <button
+            </button> 
  <div className="relative ml-3">
   <button
     onClick={() => {
