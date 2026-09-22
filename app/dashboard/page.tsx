@@ -217,7 +217,32 @@ const [aiResponse, setAiResponse] = useState(
     alert("Wallet connection was cancelled.");
   }
 }
-function disconnectWallet() {
+async function switchAccount() {
+  const ethereum = (window as any).ethereum;
+
+  if (!ethereum) {
+    alert("Please install MetaMask or another EVM wallet.");
+    return;
+  }
+
+  try {
+    await ethereum.request({
+      method: "wallet_requestPermissions",
+      params: [{ eth_accounts: {} }],
+    });
+
+    const accounts = await ethereum.request({
+      method: "eth_accounts",
+    });
+
+    if (accounts?.[0]) {
+      setWalletAddress(accounts[0]);
+    }
+  } catch {
+    // User cancelled the account switch.
+  }
+}
+ function disconnectWallet() {
   setWalletAddress("");
 }  
   function handleAIQuery() {
@@ -548,7 +573,7 @@ function disconnectWallet() {
 
       <button
         onClick={() => {
-          connectWallet();
+          switchAccount();
           setShowWalletMenu(false);
         }}
         className="w-full rounded-lg px-3 py-2 text-left text-sm text-blue-300 hover:bg-slate-800"
