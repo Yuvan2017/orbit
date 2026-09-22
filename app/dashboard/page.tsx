@@ -181,48 +181,122 @@ const [aiResponse, setAiResponse] = useState(
     setShowProjectDetails(true);
   }
 function handleAIQuery() {
-  const lower = aiInput.toLowerCase();
+  const query = aiInput.trim().toLowerCase();
 
-  if (!lower.trim()) {
-    setAiResponse("Ask me something about your projects, tasks, or productivity.");
-    return;
-  }
-
-  if (lower.includes("project")) {
+  if (!query) {
     setAiResponse(
-      `You currently have ${projects.length} projects. Orbit is ${projects[0]?.progress ?? 0}% complete.`
+      "Ask me about your projects, tasks, productivity, priorities, or Arc work."
     );
     return;
   }
 
-  if (lower.includes("task")) {
-    const completed = tasks.filter((task) => task.completed).length;
+  const completedTasks = tasks.filter((task) => task.completed);
+  const pendingTasks = tasks.filter((task) => !task.completed);
+
+  if (
+    query.includes("how many project") ||
+    query.includes("number of project") ||
+    query.includes("projects do i have") ||
+    query === "projects"
+  ) {
     setAiResponse(
-      `You have ${tasks.length} tasks, with ${completed} completed. Your productivity is ${productivity}%.`
+      `You currently have ${projects.length} projects. Your main project, Orbit, is ${projects[0]?.progress ?? 0}% complete.`
     );
     return;
   }
 
-  if (lower.includes("arc")) {
+  if (
+    query.includes("how many task") ||
+    query.includes("number of task") ||
+    query.includes("tasks do i have") ||
+    query === "tasks"
+  ) {
     setAiResponse(
-      "Orbit is being developed for the Arc ecosystem, with deeper Arc integration planned as the project evolves."
+      `You have ${tasks.length} tasks in total: ${completedTasks.length} completed and ${pendingTasks.length} still pending.`
     );
     return;
   }
 
-  if (lower.includes("productivity")) {
+  if (
+    query.includes("what should i work") ||
+    query.includes("what should i do") ||
+    query.includes("what do i work") ||
+    query.includes("next task") ||
+    query.includes("next step")
+  ) {
+    if (pendingTasks.length > 0) {
+      setAiResponse(
+        `I recommend focusing on "${pendingTasks[0].title}" next. You currently have ${pendingTasks.length} pending tasks.`
+      );
+    } else {
+      setAiResponse(
+        "Great work! You have no pending tasks right now."
+      );
+    }
+    return;
+  }
+
+  if (
+    query.includes("productivity") ||
+    query.includes("productive") ||
+    query.includes("how am i doing") ||
+    query.includes("my progress")
+  ) {
     setAiResponse(
-      `Your current task productivity is ${productivity}%. Keep completing high-priority tasks to improve it.`
+      `Your current task productivity is ${productivity}%. You have completed ${completedTasks.length} of ${tasks.length} tasks.`
+    );
+    return;
+  }
+
+  if (
+    query.includes("unfinished") ||
+    query.includes("pending") ||
+    query.includes("incomplete")
+  ) {
+    setAiResponse(
+      `You currently have ${pendingTasks.length} unfinished tasks.`
+    );
+    return;
+  }
+
+  if (
+    query.includes("arc") ||
+    query.includes("ecosystem")
+  ) {
+    setAiResponse(
+      "Orbit is being developed for the Arc ecosystem. The current dashboard provides the workspace foundation, with deeper Arc integration planned as the project evolves."
+    );
+    return;
+  }
+
+  if (
+    query.includes("summary") ||
+    query.includes("overview") ||
+    query.includes("status")
+  ) {
+    setAiResponse(
+      `Orbit currently has ${projects.length} projects and ${tasks.length} tasks. ${completedTasks.length} tasks are completed, with overall task productivity at ${productivity}%.`
+    );
+    return;
+  }
+
+  if (
+    query.includes("hello") ||
+    query.includes("hi ") ||
+    query === "hi" ||
+    query.includes("hey")
+  ) {
+    setAiResponse(
+      "Hello! I'm Orbit's productivity assistant. Ask me about your projects, tasks, productivity, priorities, or Arc work."
     );
     return;
   }
 
   setAiResponse(
-    "I can help with your projects, tasks, productivity, and planned Arc integration. Try asking one of those."
+    "I can help you understand your projects, tasks, productivity, priorities, and Arc work. Try asking: \"What should I work on next?\""
   );
 }
-  function createProject() {
-    if (!newProject.trim()) return;
+    function createProject() {   if (!newProject.trim()) return;
 
     const project: Project = {
       id: Date.now(),
