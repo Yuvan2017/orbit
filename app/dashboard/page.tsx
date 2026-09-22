@@ -78,7 +78,22 @@ const defaultTasks: Task[] = [
 export default function Dashboard() {
  const [active, setActive] = useState("Dashboard");
 const [showAIAssistant, setShowAIAssistant] = useState(false);
-const [walletAddress, setWalletAddress] = useState("");
+const [walletAddress, setWalletAddress] = useState(""); 
+  useEffect(() => {
+  const ethereum = (window as any).ethereum;
+
+  if (!ethereum) return;
+
+  const handleAccountsChanged = (accounts: string[]) => {
+    setWalletAddress(accounts[0] || "");
+  };
+
+  ethereum.on("accountsChanged", handleAccountsChanged);
+
+  return () => {
+    ethereum.removeListener("accountsChanged", handleAccountsChanged);
+  };
+}, []);
 
   const [projects, setProjects] = useState<Project[]>(defaultProjects);
   const [tasks, setTasks] = useState<Task[]>(defaultTasks);
