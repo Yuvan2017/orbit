@@ -227,12 +227,12 @@ async function switchAccount() {
 
   try {
     await ethereum.request({
-      method: "wallet_requestPermissions",
+      method: "wallet_revokePermissions",
       params: [{ eth_accounts: {} }],
     });
 
     const accounts = await ethereum.request({
-      method: "eth_accounts",
+      method: "eth_requestAccounts",
     });
 
     if (accounts?.[0]) {
