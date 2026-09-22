@@ -76,7 +76,7 @@ const defaultTasks: Task[] = [
 ];
 
 export default function Dashboard() {
-  const [active, setActive] = useState("Dashboard");
+  const [active, setActive] = useState("Dashboard"); const [showAIAssistant, setShowAIAssistant] = useState(false);
 
   const [projects, setProjects] = useState<Project[]>(defaultProjects);
   const [tasks, setTasks] = useState<Task[]>(defaultTasks);
@@ -645,9 +645,9 @@ function handleAIQuery() {
               </div>
 
               <button
-                onClick={() => {
+               onClick={() => {
   setActive("AI Assistant");
-  document.getElementById("ai-assistant")?.scrollIntoView({ behavior: "smooth" });
+  setShowAIAssistant(true);
 }}
                 className="rounded-xl border border-purple-500/40 px-5 py-3 text-sm font-semibold hover:bg-purple-500/10"
               >
@@ -661,7 +661,65 @@ function handleAIQuery() {
         </section>
       </div>
 
-      {/* CREATE PROJECT MODAL */}
+     {/* AI ASSISTANT MODAL */}
+{showAIAssistant && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
+    <div className="w-full max-w-2xl rounded-2xl border border-purple-500/30 bg-slate-900 p-6 shadow-2xl">
+
+      <div className="flex items-start justify-between">
+        <div>
+          <p className="text-sm font-semibold text-purple-300">
+            Orbit AI Assistant
+          </p>
+
+          <h3 className="mt-1 text-2xl font-bold">
+            Your intelligent productivity layer
+          </h3>
+
+          <p className="mt-2 text-sm text-slate-400">
+            Ask Orbit about your projects, tasks, productivity, or Arc integration.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setShowAIAssistant(false)}
+          className="text-xl text-slate-500 hover:text-white"
+        >
+          ×
+        </button>
+      </div>
+
+      <div className="mt-6 rounded-xl border border-slate-800 bg-slate-950 p-4">
+        <p className="text-sm text-slate-400">Orbit</p>
+        <p className="mt-2 text-sm leading-6 text-white">
+          {aiResponse}
+        </p>
+      </div>
+
+      <div className="mt-4 flex gap-3">
+        <input
+          value={aiInput}
+          onChange={(e) => setAiInput(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") handleAIQuery();
+          }}
+          placeholder="Ask Orbit about your projects..."
+          className="flex-1 rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm outline-none focus:border-purple-500"
+        />
+
+        <button
+          type="button"
+          onClick={handleAIQuery}
+          className="rounded-xl bg-purple-600 px-5 py-3 text-sm font-semibold hover:bg-purple-500"
+        >
+          Ask Orbit
+        </button>
+      </div>
+
+    </div>
+  </div>
+)}  {/* CREATE PROJECT MODAL */}
       {showProjectForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
 
