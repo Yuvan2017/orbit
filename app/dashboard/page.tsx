@@ -201,7 +201,10 @@ const [aiResponse, setAiResponse] = useState(
     alert("Wallet connection was cancelled.");
   }
 }
-function handleAIQuery() {
+function disconnectWallet() {
+  setWalletAddress("");
+}  
+  function handleAIQuery() {
   const query = aiInput.trim().toLowerCase();
 
   if (!query) {
@@ -501,7 +504,7 @@ function handleAIQuery() {
             >
               + New Task
             </button> <button
-  onClick={connectWallet}
+  onClick={walletAddress ? disconnectWallet : connectWallet}
   className="ml-3 rounded-xl border border-blue-500/40 bg-blue-600/10 px-5 py-3 text-sm font-semibold text-blue-300 transition hover:bg-blue-600/20"
 >
   {walletAddress
