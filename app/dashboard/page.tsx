@@ -79,6 +79,7 @@ export default function Dashboard() {
  const [active, setActive] = useState("Dashboard");
 const [showAIAssistant, setShowAIAssistant] = useState(false);
 const [walletAddress, setWalletAddress] = useState(""); 
+  const [showWalletMenu, setShowWalletMenu] = useState(false); 
   useEffect(() => {
   const ethereum = (window as any).ethereum;
 
@@ -519,13 +520,54 @@ function disconnectWallet() {
             >
               + New Task
             </button> <button
-  onClick={walletAddress ? disconnectWallet : connectWallet}
-  className="ml-3 rounded-xl border border-blue-500/40 bg-blue-600/10 px-5 py-3 text-sm font-semibold text-blue-300 transition hover:bg-blue-600/20"
->
-  {walletAddress
-    ? `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`
-    : "Connect Wallet"}
-</button>
+ <div className="relative ml-3">
+  <button
+    onClick={() => {
+      if (!walletAddress) {
+        connectWallet();
+        return;
+      }
+
+      setShowWalletMenu(!showWalletMenu);
+    }}
+    className="rounded-xl border border-blue-500/40 bg-blue-600/10 px-5 py-3 text-sm font-semibold text-blue-300 transition hover:bg-blue-600/20"
+  >
+    {walletAddress
+      ? `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)} ▾`
+      : "Connect Wallet"}
+  </button>
+
+  {showWalletMenu && walletAddress && (
+    <div className="absolute right-0 mt-2 w-64 rounded-xl border border-slate-700 bg-slate-900 p-3 shadow-xl">
+      <div className="mb-3 px-2">
+        <p className="text-xs text-slate-400">Connected wallet</p>
+        <p className="mt-1 break-all text-sm text-white">
+          {walletAddress}
+        </p>
+      </div>
+
+      <button
+        onClick={() => {
+          connectWallet();
+          setShowWalletMenu(false);
+        }}
+        className="w-full rounded-lg px-3 py-2 text-left text-sm text-blue-300 hover:bg-slate-800"
+      >
+        Switch Account
+      </button>
+
+      <button
+        onClick={() => {
+          disconnectWallet();
+          setShowWalletMenu(false);
+        }}
+        className="mt-1 w-full rounded-lg px-3 py-2 text-left text-sm text-red-300 hover:bg-slate-800"
+      >
+        Disconnect
+      </button>
+    </div>
+  )}
+</div>
 
           </header>
 
