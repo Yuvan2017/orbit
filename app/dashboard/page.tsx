@@ -80,9 +80,43 @@ export default function Dashboard() {
 const [showAIAssistant, setShowAIAssistant] = useState(false);
 const [walletAddress, setWalletAddress] = useState(""); 
   const [chainId, setChainId] = useState("");
-  const [showWalletMenu, setShowWalletMenu] = useState(false); 
+  const [showWalletMenu, setShowWalletMenu] = useState(false);
+  const [walletProviders, setWalletProviders] = useState<any[]>([]);
+const [selectedProvider, setSelectedProvider] = useState<any>(null);
+const [showWalletSelector, setShowWalletSelector] = useState(false);
+ useEffect(() => {
+  const handleProviderAnnouncement = (event: any) => {
+    const providerDetail = event.detail;
+
+    setWalletProviders((providers) => {
+      const exists = providers.some(
+        (provider) => provider.info.uuid === providerDetail.info.uuid
+      );
+
+      if (exists) {
+        return providers;
+      }
+
+      return [...providers, providerDetail];
+    });
+  };
+
+  window.addEventListener(
+    "eip6963:announceProvider",
+    handleProviderAnnouncement as EventListener
+  );
+
+  window.dispatchEvent(new Event("eip6963:requestProvider"));
+
+  return () => {
+    window.removeEventListener(
+      "eip6963:announceProvider",
+      handleProviderAnnouncement as EventListener
+    );
+  };
+}, []);
   useEffect(() => {
-  const ethereum = (window as any).ethereum;
+  const ethereum = selectedProvider || (window as any).ethereum;
 
   if (!ethereum) return;
 
@@ -95,9 +129,9 @@ const [walletAddress, setWalletAddress] = useState("");
   return () => {
     ethereum.removeListener("accountsChanged", handleAccountsChanged);
   };
-}, []); 
+ }, [selectedProvider]);
   useEffect(() => {
-  const ethereum = (window as any).ethereum;
+  const ethereum = selectedProvider || (window as any).ethereum;
 
   if (!ethereum) return;
 
@@ -116,7 +150,7 @@ const [walletAddress, setWalletAddress] = useState("");
   return () => {
     ethereum.removeListener("chainChanged", updateChain);
   };
-}, []);
+ }, [selectedProvider]);
 
   const [projects, setProjects] = useState<Project[]>(defaultProjects);
   const [tasks, setTasks] = useState<Task[]>(defaultTasks);
@@ -219,11 +253,16 @@ const [aiResponse, setAiResponse] = useState(
     setEditProgress(project.progress);
     setEditStatus(project.status);
     setShowProjectDetails(true);
-  } async function connectWallet() {
+ async function connectWallet() {
+  if (walletProviders.length > 0) {
+    setShowWalletSelector(true);
+    return;
+  }
+
   const ethereum = (window as any).ethereum;
 
   if (!ethereum) {
-    alert("Please install MetaMask or another EVM wallet.");
+    alert("Please install an EVM wallet such as MetaMask, Rabby, or OKX.");
     return;
   }
 
@@ -234,13 +273,35 @@ const [aiResponse, setAiResponse] = useState(
 
     if (accounts?.[0]) {
       setWalletAddress(accounts[0]);
+      setSelectedProvider(ethereum);
     }
-  } catch {
-    alert("Wallet connection was cancelled.");
+  } catch (error: any) {
+    if (error?.code !== 4001) {
+      alert("Unable to connect wallet.");
+    }
   }
 }
-async function switchToArc() {
-  const ethereum = (window as any).ethereum;
+async function selectWalletProvider(providerDetail: any) {
+  try {
+    const provider = providerDetail.provider;
+
+    const accounts = await provider.request({
+      method: "eth_requestAccounts",
+    });
+
+    if (accounts?.[0]) {
+      setSelectedProvider(provider);
+      setWalletAddress(accounts[0]);
+      setShowWalletSelector(false);
+    }
+  } catch (error: any) {
+    if (error?.code !== 4001) {
+      alert("Unable to connect selected wallet.");
+    }
+  }
+}
+    async function switchToArc() {
+ const ethereum = selectedProvider || (window as any).ethereum;
 
   if (!ethereum) {
     alert("Please install MetaMask or another EVM wallet.");
@@ -634,7 +695,41 @@ async function switchToArc() {
   </button>
 )}
 
-  {showWalletMenu && walletAddress && (
+ {showWalletSelector && (
+  <div className="absolute right-0 mt-2 w-72 rounded-xl border border-slate-700 bg-slate-900 p-4 shadow-xl z-50">
+    <div className="mb-3 flex items-center justify-between">
+      <p className="text-sm font-semibold text-white">
+        Select a Wallet
+      </p>
+
+      <button
+        onClick={() => setShowWalletSelector(false)}
+        className="text-slate-400 hover:text-white"
+      >
+        ✕
+      </button>
+    </div>
+
+    <div className="space-y-2">
+      {walletProviders.map((providerDetail) => (
+        <button
+          key={providerDetail.info.uuid}
+          onClick={() => selectWalletProvider(providerDetail)}
+          className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left text-sm text-white hover:bg-slate-800"
+        >
+          <img
+            src={providerDetail.info.icon}
+            alt=""
+            className="h-7 w-7 rounded-lg"
+          />
+
+          <span>{providerDetail.info.name}</span>
+        </button>
+      ))}
+    </div>
+  </div>
+)}
+   {showWalletMenu && walletAddress && (
     <div className="absolute right-0 mt-2 w-64 rounded-xl border border-slate-700 bg-slate-900 p-3 shadow-xl">
       <div className="mb-3 px-2">
         <p className="text-xs text-slate-400">Connected wallet</p>
