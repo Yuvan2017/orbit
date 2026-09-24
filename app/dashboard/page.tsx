@@ -307,7 +307,38 @@ async function selectWalletProvider(providerDetail: any) {
     }
   }
 }
-    async function switchToArc() {
+  function validateSendUsdc() {
+  if (!walletAddress) {
+    alert("Please connect your wallet first.");
+    return false;
+  }
+
+  if (chainId !== "0x4cef52") {
+    alert("Please switch to Arc Testnet first.");
+    return false;
+  }
+
+  if (!sendRecipient || !/^0x[a-fA-F0-9]{40}$/.test(sendRecipient)) {
+    alert("Please enter a valid recipient wallet address.");
+    return false;
+  }
+
+  const amount = Number(sendAmount);
+  const balance = Number(usdcBalance);
+
+  if (!sendAmount || !Number.isFinite(amount) || amount <= 0) {
+    alert("Please enter a valid USDC amount.");
+    return false;
+  }
+
+  if (amount > balance) {
+    alert("Insufficient USDC balance.");
+    return false;
+  }
+
+  return true;
+} 
+  async function switchToArc() {
  const ethereum = selectedProvider || (window as any).ethereum;
 
   if (!ethereum) {
@@ -797,6 +828,10 @@ async function selectWalletProvider(providerDetail: any) {
         </button>
 
         <button
+          onClick={() => {
+    if (!validateSendUsdc()) return;
+    alert("Validation passed. Transaction sending will be added next.");
+  }}
           className="flex-1 rounded-lg bg-blue-600 px-3 py-2 text-xs font-semibold text-white hover:bg-blue-700"
         >
           Send USDC
