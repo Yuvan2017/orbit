@@ -81,7 +81,10 @@ const [showAIAssistant, setShowAIAssistant] = useState(false);
 const [walletAddress, setWalletAddress] = useState(""); 
   const [usdcBalance, setUsdcBalance] = useState("");
   const [chainId, setChainId] = useState("");
-  const [showWalletMenu, setShowWalletMenu] = useState(false);
+  const [showWalletMenu, setShowWalletMenu] = useState(false); 
+  const [showSendUsdc, setShowSendUsdc] = useState(false); 
+  const [sendRecipient, setSendRecipient] = useState("");
+const [sendAmount, setSendAmount] = useState("");
   const [walletProviders, setWalletProviders] = useState<any[]>([]);
 const [selectedProvider, setSelectedProvider] = useState<any>(null);
 const [showWalletSelector, setShowWalletSelector] = useState(false);
@@ -721,7 +724,15 @@ async function selectWalletProvider(providerDetail: any) {
     USDC Balance: {usdcBalance}
   </div>
 )}
-  {walletAddress && chainId && chainId !== "0x4cef52" && (
+ {walletAddress && chainId === "0x4cef52" && (
+  <button
+    onClick={() => setShowSendUsdc(true)}
+    className="mt-2 w-full rounded-lg border border-blue-500/40 bg-blue-600/10 px-3 py-2 text-xs font-semibold text-blue-300 hover:bg-blue-600/20"
+  >
+    Send USDC
+  </button>
+)}
+   {walletAddress && chainId && chainId !== "0x4cef52" && (
   <button
     onClick={switchToArc}
     className="mt-2 w-full rounded-lg border border-purple-500/40 bg-purple-600/10 px-3 py-2 text-xs font-semibold text-purple-300 hover:bg-purple-600/20"
@@ -730,7 +741,71 @@ async function selectWalletProvider(providerDetail: any) {
   </button>
 )}
 
- {showWalletSelector && (
+{showSendUsdc && (
+  <div className="absolute right-0 mt-2 w-80 rounded-xl border border-slate-700 bg-slate-900 p-4 shadow-xl z-50">
+    <div className="mb-4 flex items-center justify-between">
+      <p className="text-sm font-semibold text-white">
+        Send USDC
+      </p>
+      <button
+        onClick={() => setShowSendUsdc(false)}
+        className="text-slate-400 hover:text-white"
+      >
+        ×
+      </button>
+    </div>
+
+    <div className="space-y-3">
+      <div>
+        <label className="mb-1 block text-xs text-slate-400">
+          Recipient Address
+        </label>
+        <input
+          type="text"
+          value={sendRecipient}
+          onChange={(e) => setSendRecipient(e.target.value)}
+          placeholder="0x..."
+          className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white outline-none focus:border-blue-500"
+        />
+      </div>
+
+      <div>
+        <label className="mb-1 block text-xs text-slate-400">
+          Amount (USDC)
+        </label>
+        <input
+          type="number"
+          value={sendAmount}
+          onChange={(e) => setSendAmount(e.target.value)}
+          placeholder="0.00"
+          min="0"
+          step="0.01"
+          className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white outline-none focus:border-blue-500"
+        />
+      </div>
+
+      <div className="text-xs text-slate-400">
+        Available: {usdcBalance || "0"} USDC
+      </div>
+
+      <div className="flex gap-2 pt-1">
+        <button
+          onClick={() => setShowSendUsdc(false)}
+          className="flex-1 rounded-lg border border-slate-700 px-3 py-2 text-xs font-semibold text-slate-300 hover:bg-slate-800"
+        >
+          Cancel
+        </button>
+
+        <button
+          className="flex-1 rounded-lg bg-blue-600 px-3 py-2 text-xs font-semibold text-white hover:bg-blue-700"
+        >
+          Send USDC
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+   {showWalletSelector && (
   <div className="absolute right-0 mt-2 w-72 rounded-xl border border-slate-700 bg-slate-900 p-4 shadow-xl z-50">
     <div className="mb-3 flex items-center justify-between">
       <p className="text-sm font-semibold text-white">
