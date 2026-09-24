@@ -384,8 +384,7 @@ async function selectWalletProvider(providerDetail: any) {
 }
 
 async function switchToArc() {
-  async function switchToArc() {
- const ethereum = selectedProvider || (window as any).ethereum;
+   const ethereum = selectedProvider || (window as any).ethereum;
 
   if (!ethereum) {
     alert("Please install MetaMask or another EVM wallet.");
