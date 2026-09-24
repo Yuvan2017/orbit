@@ -338,6 +338,52 @@ async function selectWalletProvider(providerDetail: any) {
 
   return true;
 } 
+ async function sendUsdcTransaction() {
+  if (!validateSendUsdc()) return;
+
+  const ethereum = selectedProvider || (window as any).ethereum;
+
+  if (!ethereum) {
+    alert("Please connect your wallet first.");
+    return;
+  }
+
+  try {
+    const [wholePart, fractionPart = ""] = sendAmount
+      .trim()
+      .split(".");
+
+    const fraction = (fractionPart + "000000000000000000").slice(0, 18);
+
+    const wholeUnits =
+      BigInt(wholePart) * BigInt("1000000000000000000");
+
+    const fractionUnits = BigInt(fraction);
+
+    const value = wholeUnits + fractionUnits;
+
+    const txHash = await ethereum.request({
+      method: "eth_sendTransaction",
+      params: [
+        {
+          from: walletAddress,
+          to: sendRecipient,
+          value: `0x${value.toString(16)}`,
+        },
+      ],
+    });
+
+    alert(`Transaction submitted: ${txHash}`);
+  } catch (error: any) {
+    if (error?.code === 4001) {
+      alert("Transaction was cancelled.");
+    } else {
+      alert("Transaction failed or was rejected.");
+    }
+  }
+}
+
+async function switchToArc() {
   async function switchToArc() {
  const ethereum = selectedProvider || (window as any).ethereum;
 
@@ -828,10 +874,7 @@ async function selectWalletProvider(providerDetail: any) {
         </button>
 
         <button
-          onClick={() => {
-    if (!validateSendUsdc()) return;
-    alert("Validation passed. Transaction sending will be added next.");
-  }}
+          onClick={sendUsdcTransaction}
           className="flex-1 rounded-lg bg-blue-600 px-3 py-2 text-xs font-semibold text-white hover:bg-blue-700"
         >
           Send USDC
