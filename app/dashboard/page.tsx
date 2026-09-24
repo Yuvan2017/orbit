@@ -714,7 +714,12 @@ async function selectWalletProvider(providerDetail: any) {
   <div className="mt-2 text-right text-xs text-slate-400">
     Network:{" "}
     {chainId === "0x4cef52" ? "Arc Testnet" : `Chain ${chainId}`}
+  </div> 
+      {usdcBalance && (
+  <div className="mt-1 text-right text-xs text-slate-400">
+    USDC Balance: {usdcBalance}
   </div>
+)}
 )} 
   {walletAddress && chainId && chainId !== "0x4cef52" && (
   <button
