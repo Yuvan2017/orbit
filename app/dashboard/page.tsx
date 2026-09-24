@@ -253,7 +253,8 @@ const [aiResponse, setAiResponse] = useState(
     setEditProgress(project.progress);
     setEditStatus(project.status);
     setShowProjectDetails(true);
- async function connectWallet() {
+ }
+  async function connectWallet() {
   if (walletProviders.length > 0) {
     setShowWalletSelector(true);
     return;
