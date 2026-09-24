@@ -355,8 +355,8 @@ async function selectWalletProvider(providerDetail: any) {
     });
 
     const rawBalance = BigInt(balance);
-    const whole = rawBalance / 1000000000000000000n;
-    const fraction = (rawBalance % 1000000000000000000n)
+    const whole = rawBalance / BigInt("1000000000000000000");
+    const fraction = (rawBalance % BigInt("1000000000000000000"))
       .toString()
       .padStart(18, "0")
       .slice(0, 2);
