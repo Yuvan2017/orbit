@@ -79,6 +79,7 @@ export default function Dashboard() {
  const [active, setActive] = useState("Dashboard");
 const [showAIAssistant, setShowAIAssistant] = useState(false);
 const [walletAddress, setWalletAddress] = useState(""); 
+  const [usdcBalance, setUsdcBalance] = useState("");
   const [chainId, setChainId] = useState("");
   const [showWalletMenu, setShowWalletMenu] = useState(false);
   const [walletProviders, setWalletProviders] = useState<any[]>([]);
@@ -121,7 +122,8 @@ const [showWalletSelector, setShowWalletSelector] = useState(false);
   if (!ethereum) return;
 
   const handleAccountsChanged = (accounts: string[]) => {
-    setWalletAddress(accounts[0] || "");
+    setWalletAddress(accounts[0] || ""); 
+   fetchUsdcBalance(accounts[0] || "");
   };
 
   ethereum.on("accountsChanged", handleAccountsChanged);
@@ -140,7 +142,8 @@ const [showWalletSelector, setShowWalletSelector] = useState(false);
       method: "eth_chainId",
     });
 
-    setChainId(currentChainId);
+    setChainId(currentChainId); 
+    fetchUsdcBalance();
   };
 
   updateChain();
@@ -335,6 +338,32 @@ async function selectWalletProvider(providerDetail: any) {
     } else {
       alert("Unable to switch to Arc Testnet.");
     }
+  }
+}
+ async function fetchUsdcBalance(address = walletAddress) {
+  const ethereum = selectedProvider || (window as any).ethereum;
+
+  if (!ethereum || !address) {
+    setUsdcBalance("");
+    return;
+  }
+
+  try {
+    const balance = await ethereum.request({
+      method: "eth_getBalance",
+      params: [address, "latest"],
+    });
+
+    const rawBalance = BigInt(balance);
+    const whole = rawBalance / 1000000000000000000n;
+    const fraction = (rawBalance % 1000000000000000000n)
+      .toString()
+      .padStart(18, "0")
+      .slice(0, 2);
+
+    setUsdcBalance(`${whole}.${fraction}`);
+  } catch {
+    setUsdcBalance("");
   }
 }
   async function switchAccount() {
