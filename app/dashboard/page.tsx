@@ -845,42 +845,18 @@ console.log("Arc transactions response:", data);
         View on ArcScan ↗
       </a>
     </div> 
-    <div className="mt-3 space-y-2">
-  {arcTransactions.length === 0 ? (
-    <p className="text-xs text-slate-500">
-      No recent Arc transactions found.
-    </p>
-  ) : (
-    arcTransactions.map((transaction: any) => (
-      <div
-        key={transaction.hash}
-        className="rounded-lg border border-slate-800 bg-slate-950/50 p-3"
-      >
-        <div className="flex items-center justify-between gap-3">
-          <span className="text-xs text-slate-300">
-            Arc Transaction
-          </span>
-
-          <a
-            href={`https://testnet.arcscan.app/tx/${transaction.hash}`}
-            target="_blank"
-            rel="noreferrer"
-            className="text-xs text-purple-300 hover:text-purple-200"
-          >
-            View ↗
-          </a>
-        </div>
-
-        <div className="mt-1 text-xs text-slate-500">
-          {transaction.hash?.slice(0, 10)}...
-          {transaction.hash?.slice(-8)}
-        </div>
-      </div>
-    ))
-  )}
+   <div className="mt-3">
+  <a
+    href={`https://testnet.arcscan.app/address/${walletAddress}?tab=txs`}
+    target="_blank"
+    rel="noreferrer"
+    className="block w-full rounded-lg border border-purple-500/30 bg-purple-600/10 px-3 py-2 text-center text-xs font-semibold text-purple-300 hover:bg-purple-600/20"
+  >
+    View Transactions ↗
+  </a>
 </div>
   </div>
-)}
+  )}
  {walletAddress && chainId === "0x4cef52" && (
   <button
     onClick={() => setShowSendUsdc(true)}
