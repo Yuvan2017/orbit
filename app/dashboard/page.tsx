@@ -458,8 +458,9 @@ async function switchToArc() {
   }
 
   try {
-    const response = await fetch(
-      `https://testnet.arcscan.app/api/v2/addresses/${address}/transactions?filter=validated&items_count=5`
+   const response = await fetch(
+  `/api/arc-transactions?address=${address}`
+);
     );
 
     if (!response.ok) {
