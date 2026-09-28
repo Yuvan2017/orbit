@@ -468,6 +468,7 @@ async function switchToArc() {
     }
 
     const data = await response.json();
+console.log("Arc transactions response:", data);
 
     setArcTransactions(data.items || []);
   } catch {
