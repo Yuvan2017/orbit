@@ -845,7 +845,7 @@ console.log("Arc transactions response:", data);
         View on ArcScan ↗
       </a>
     </div> 
-   <div className="mt-3">
+ <div className="mt-3">
   <a
     href={`https://testnet.arcscan.app/address/${walletAddress}?tab=txs`}
     target="_blank"
@@ -854,9 +854,9 @@ console.log("Arc transactions response:", data);
   >
     View Transactions ↗
   </a>
-</div>
-  </div>
-  )}
+</div> 
+    </div>
+)}
  {walletAddress && chainId === "0x4cef52" && (
   <button
     onClick={() => setShowSendUsdc(true)}
