@@ -80,7 +80,8 @@ export default function Dashboard() {
 const [showAIAssistant, setShowAIAssistant] = useState(false);
 const [walletAddress, setWalletAddress] = useState(""); 
   const [usdcBalance, setUsdcBalance] = useState("");
-  const [chainId, setChainId] = useState("");
+  const [chainId, setChainId] = useState(""); 
+  const [arcTransactions, setArcTransactions] = useState<any[]>([]);
   const [showWalletMenu, setShowWalletMenu] = useState(false); 
   const [showSendUsdc, setShowSendUsdc] = useState(false); 
   const [sendRecipient, setSendRecipient] = useState("");
@@ -127,6 +128,7 @@ const [showWalletSelector, setShowWalletSelector] = useState(false);
   const handleAccountsChanged = (accounts: string[]) => {
     setWalletAddress(accounts[0] || ""); 
    fetchUsdcBalance(accounts[0] || "");
+    fetchArcTransactions(accounts[0] || "", chainId);
   };
 
   ethereum.on("accountsChanged", handleAccountsChanged);
@@ -145,8 +147,9 @@ const [showWalletSelector, setShowWalletSelector] = useState(false);
       method: "eth_chainId",
     });
 
-    setChainId(currentChainId); 
-    fetchUsdcBalance();
+   setChainId(currentChainId);
+fetchUsdcBalance();
+fetchArcTransactions(walletAddress, currentChainId);
   };
 
   updateChain();
@@ -443,6 +446,32 @@ async function switchToArc() {
     setUsdcBalance(`${whole}.${fraction}`);
   } catch {
     setUsdcBalance("");
+  }
+}
+ async function fetchArcTransactions(
+  address = walletAddress,
+  networkChainId = chainId
+) {
+ if (!address || networkChainId !== "0x4cef52") {
+    setArcTransactions([]);
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      `https://testnet.arcscan.app/api/v2/addresses/${address}/transactions?filter=validated&items_count=5`
+    );
+
+    if (!response.ok) {
+      setArcTransactions([]);
+      return;
+    }
+
+    const data = await response.json();
+
+    setArcTransactions(data.items || []);
+  } catch {
+    setArcTransactions([]);
   }
 }
   async function switchAccount() {
@@ -798,6 +827,58 @@ async function switchToArc() {
       {usdcBalance && (
   <div className="mt-1 text-right text-xs text-slate-400">
     USDC Balance: {usdcBalance}
+  </div>
+)} 
+   {walletAddress && chainId === "0x4cef52" && (
+  <div className="mt-4 rounded-xl border border-slate-700 bg-slate-900/60 p-4">
+    <div className="flex items-center justify-between">
+      <h3 className="text-sm font-semibold text-white">
+        Arc Activity
+      </h3>
+
+      <a
+        href={`https://testnet.arcscan.app/address/${walletAddress}`}
+        target="_blank"
+        rel="noreferrer"
+        className="text-xs text-purple-300 hover:text-purple-200"
+      >
+        View on ArcScan ↗
+      </a>
+    </div> 
+    <div className="mt-3 space-y-2">
+  {arcTransactions.length === 0 ? (
+    <p className="text-xs text-slate-500">
+      No recent Arc transactions found.
+    </p>
+  ) : (
+    arcTransactions.map((transaction: any) => (
+      <div
+        key={transaction.hash}
+        className="rounded-lg border border-slate-800 bg-slate-950/50 p-3"
+      >
+        <div className="flex items-center justify-between gap-3">
+          <span className="text-xs text-slate-300">
+            Arc Transaction
+          </span>
+
+          <a
+            href={`https://testnet.arcscan.app/tx/${transaction.hash}`}
+            target="_blank"
+            rel="noreferrer"
+            className="text-xs text-purple-300 hover:text-purple-200"
+          >
+            View ↗
+          </a>
+        </div>
+
+        <div className="mt-1 text-xs text-slate-500">
+          {transaction.hash?.slice(0, 10)}...
+          {transaction.hash?.slice(-8)}
+        </div>
+      </div>
+    ))
+  )}
+</div>
   </div>
 )}
  {walletAddress && chainId === "0x4cef52" && (
