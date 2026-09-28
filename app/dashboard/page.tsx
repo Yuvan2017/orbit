@@ -461,9 +461,7 @@ async function switchToArc() {
    const response = await fetch(
   `/api/arc-transactions?address=${address}`
 );
-    );
-
-    if (!response.ok) {
+     if (!response.ok) {
       setArcTransactions([]);
       return;
     }
