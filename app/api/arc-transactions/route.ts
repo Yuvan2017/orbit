@@ -13,7 +13,7 @@ export async function GET(request: Request) {
 
   try {
     const response = await fetch(
-      `https://testnet.arcscan.app/api/v2/addresses/${address}/transactions?filter=validated&items_count=5`,
+      `https://testnet.arcscan.app/api/v2/addresses/${address}/transactions?items_count=5`,
       {
         cache: "no-store",
       }
