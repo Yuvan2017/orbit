@@ -404,7 +404,7 @@ if (receipt.status === "0x1") {
   ).toFixed(8);
 
   alert(
-    `Transaction confirmed successfully!\n\nGas fee: ${gasFeeFormatted} native units\n\nTrack it here:\nhttps://testnet.arcscan.app/tx/${txHash}`
+    `Transaction confirmed successfully!\n\nGas fee: ${gasFeeFormatted} USDC\n\nTrack it here:\nhttps://testnet.arcscan.app/tx/${txHash}`
   );
 } else {
   alert(
