@@ -399,11 +399,8 @@ if (receipt.status === "0x1") {
   const gasUsed = BigInt(receipt.gasUsed);
   const gasPrice = BigInt(receipt.effectiveGasPrice);
   const gasFee = gasUsed * gasPrice;
-  const gasFeeFormatted = (
-    Number(gasFee) / 1e18
-  ).toFixed(8);
-
-  alert(
+ const gasFeeFormatted = `${gasFee / BigInt("1000000000000000000")}.${(gasFee % BigInt("1000000000000000000")).toString().padStart(18, "0").slice(0, 8)}`;
+alert(
     `Transaction confirmed successfully!\n\nGas fee: ${gasFeeFormatted} USDC\n\nTrack it here:\nhttps://testnet.arcscan.app/tx/${txHash}`
   );
 } else {
