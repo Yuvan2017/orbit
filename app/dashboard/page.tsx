@@ -376,7 +376,9 @@ async function selectWalletProvider(providerDetail: any) {
       ],
     });
 
-    alert(`Transaction submitted: ${txHash}`);
+    alert(
+  `Transaction submitted!\n\nTrack its status on ArcScan:\nhttps://testnet.arcscan.app/tx/${txHash}`
+);
   } catch (error: any) {
     if (error?.code === 4001) {
       alert("Transaction was cancelled.");
