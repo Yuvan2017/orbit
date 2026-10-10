@@ -375,14 +375,23 @@ async function selectWalletProvider(providerDetail: any) {
         },
       ],
     });
+let receipt = null;
+const maxAttempts = 12;
 
-   const receipt = await ethereum.request({
-  method: "eth_getTransactionReceipt",
-  params: [txHash],
-});
+for (let attempt = 0; attempt < maxAttempts; attempt++) {
+  receipt = await ethereum.request({
+    method: "eth_getTransactionReceipt",
+    params: [txHash],
+  });
+
+  if (receipt) break;
+
+  await new Promise((resolve) => setTimeout(resolve, 5000));
+}
+
 if (!receipt) {
   alert(
-    `Transaction submitted and still pending.\n\nTrack it here:\nhttps://testnet.arcscan.app/tx/${txHash}`
+    `Transaction is still pending.\n\nTrack it here:\nhttps://testnet.arcscan.app/tx/${txHash}`
   );
   return;
 }
@@ -396,7 +405,7 @@ if (receipt.status === "0x1") {
     `Transaction failed on-chain.\n\nTrack it here:\nhttps://testnet.arcscan.app/tx/${txHash}`
   );
 }
-  } catch (error: any) {
+} catch (error: any) {
     if (error?.code === 4001) {
       alert("Transaction was cancelled.");
     } else {
