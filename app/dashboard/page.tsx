@@ -376,9 +376,26 @@ async function selectWalletProvider(providerDetail: any) {
       ],
     });
 
-    alert(
-  `Transaction submitted!\n\nTrack its status on ArcScan:\nhttps://testnet.arcscan.app/tx/${txHash}`
-);
+   const receipt = await ethereum.request({
+  method: "eth_getTransactionReceipt",
+  params: [txHash],
+});
+if (!receipt) {
+  alert(
+    `Transaction submitted and still pending.\n\nTrack it here:\nhttps://testnet.arcscan.app/tx/${txHash}`
+  );
+  return;
+}
+
+if (receipt.status === "0x1") {
+  alert(
+    `Transaction confirmed successfully!\n\nTrack it here:\nhttps://testnet.arcscan.app/tx/${txHash}`
+  );
+} else {
+  alert(
+    `Transaction failed on-chain.\n\nTrack it here:\nhttps://testnet.arcscan.app/tx/${txHash}`
+  );
+}
   } catch (error: any) {
     if (error?.code === 4001) {
       alert("Transaction was cancelled.");
