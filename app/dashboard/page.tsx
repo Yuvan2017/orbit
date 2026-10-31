@@ -783,7 +783,15 @@ console.log("Arc transactions response:", data);
             ].map((item) => (
               <button
                 key={item}
-                onClick={() => setActive(item)}
+                onClick={() => {
+  setActive(item);
+
+  if (item === "AI Assistant") {
+    setShowAIAssistant(true);
+  } else {
+    setShowAIAssistant(false);
+  }
+}}
                 className={`w-full rounded-xl px-4 py-3 text-left text-sm transition ${
                   active === item
                     ? "bg-purple-600 text-white"
